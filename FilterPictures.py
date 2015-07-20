@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8
+
 ######################
 # Filter Pictures
 # Ver 0.1
