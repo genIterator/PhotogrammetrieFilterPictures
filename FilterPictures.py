@@ -87,8 +87,7 @@ def readUserInput ():
     #readStellen()
     return True
 
-def copyFiles (dateienSelected):
-    tempSrc = ""
+def copyFiles (dateienSelected, copyMove):
     tempDest = ""
     tempDest2 = ""
     dest = ""
@@ -107,11 +106,14 @@ def copyFiles (dateienSelected):
     try:
         os.makedirs(dest)
     except:
-        print("output Ordner konnte nicht erstellt werden. Möglicherweise fehlende Schreibrechte.")
+        print("output Ordner konnte nicht erstellt werden. Moeglicherweise fehlende Schreibrechte.")
         return False        
     print("Dateien werden nach "+dest+" kopiert.")
     for datei in dateienSelected:
-        shutil.copy(datei, dest)
+        if (copyMove):
+            shutil.copy(datei, dest)
+        else:
+            shutil.move(datei, dest)
     print("Alle Dateien kopiert. Vorgang abgeschlossen.")
     return True
     
@@ -152,13 +154,17 @@ def selectPictures ():
         print("Vorgang abgebrochen.")
         return False
     
+# iterates over the directory, counting all files that fit.
+# also includes copy/move option
 def selectPictures2 ():
     global dateiEndung
     global selector
     counter = 0
     dateienSelected = []
     tempGlob = "*"+dateiEndung
-    cont = " "    
+    cont = " "
+    mvOpt = " "
+    copy = False  
     
     for datei in glob.glob(tempGlob):
         counter += 1
@@ -167,7 +173,16 @@ def selectPictures2 ():
     print(str(len(dateienSelected))+" Dateien selektiert")
     cont = input("Fortfahren (j/n)? Dateien im output Ordner werden ggf. überschrieben!")
     if (cont.lower() == "j"):
-        if (copyFiles(dateienSelected)):
+        while (mvOpt == " "):
+            mvOpt = input("Dateien kopieren oder verschieben? (c/m):")
+            if (mvOpt.lower().strip() == "c"):
+                copy = True
+            elif (mvOpt.lower().strip() == "m"):
+                copy = False
+            else:
+                print("Kopieren (c) oder verschieben (m)")
+        
+        if (copyFiles(dateienSelected, copy)):
             return True
         else:
             return False
